@@ -1,0 +1,191 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="880" viewBox="0 0 1120 880" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#232F3E"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#1A6FB5"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1120" height="880" fill="#FFFFFF"/>
+
+  <!-- Title -->
+  <text x="560" y="34" font-size="22" font-weight="bold" fill="#232F3E" text-anchor="middle">AWS Kinesis Data Streams — Real-Time Streaming Architecture</text>
+  <text x="560" y="56" font-size="13" fill="#666666" text-anchor="middle">Producers → Stream (ordered log) → Lambda consumers → DynamoDB / S3 data lake — replayable, per-shard parallel</text>
+
+  <!-- Producers -->
+  <g>
+    <text x="30" y="110" font-size="14" font-weight="bold" fill="#232F3E">Producers</text>
+    <!-- EC2 app -->
+    <rect x="30" y="125" width="110" height="64" rx="4" fill="#FF9900" stroke="#CC7A00" stroke-width="1.5"/>
+    <text x="85" y="152" font-size="13" font-weight="bold" fill="#FFFFFF" text-anchor="middle">EC2</text>
+    <text x="85" y="170" font-size="11" fill="#FFFFFF" text-anchor="middle">App servers</text>
+    <!-- IoT -->
+    <rect x="30" y="205" width="110" height="64" rx="4" fill="#FF9900" stroke="#CC7A00" stroke-width="1.5"/>
+    <text x="85" y="232" font-size="13" font-weight="bold" fill="#FFFFFF" text-anchor="middle">IoT Core</text>
+    <text x="85" y="250" font-size="11" fill="#FFFFFF" text-anchor="middle">Devices</text>
+    <!-- Clickstream -->
+    <rect x="30" y="285" width="110" height="64" rx="4" fill="#8C4FFF" stroke="#6B2FD6" stroke-width="1.5"/>
+    <text x="85" y="312" font-size="13" font-weight="bold" fill="#FFFFFF" text-anchor="middle">CloudFront</text>
+    <text x="85" y="330" font-size="11" fill="#FFFFFF" text-anchor="middle">Clickstream</text>
+  </g>
+
+  <!-- Arrows producers -> Kinesis -->
+  <line x1="140" y1="157" x2="330" y2="190" stroke="#232F3E" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="205" y="160" font-size="11" fill="#232F3E" text-anchor="middle">PutRecords</text>
+  <text x="205" y="174" font-size="11" fill="#666666" text-anchor="middle">(batched, 500/call)</text>
+  <line x1="140" y1="237" x2="330" y2="215" stroke="#232F3E" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <line x1="140" y1="317" x2="330" y2="240" stroke="#232F3E" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- AWS Cloud -->
+  <rect x="330" y="100" width="760" height="700" fill="none" stroke="#232F3E" stroke-width="2"/>
+  <text x="350" y="128" font-size="15" font-weight="bold" fill="#232F3E">AWS Cloud</text>
+  <text x="350" y="146" font-size="11" fill="#666666">Region: ap-southeast-1 — KMS encryption at rest (customer-managed key)</text>
+
+  <!-- Kinesis Data Streams -->
+  <g>
+    <rect x="360" y="170" width="180" height="110" rx="4" fill="#FF9900" stroke="#CC7A00" stroke-width="1.5"/>
+    <text x="450" y="200" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Kinesis Data</text>
+    <text x="450" y="218" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Streams</text>
+    <text x="450" y="240" font-size="11" fill="#FFFFFF" text-anchor="middle">Ordered log • shards</text>
+    <text x="450" y="256" font-size="11" fill="#FFFFFF" text-anchor="middle">Retention 24h – 365d</text>
+    <text x="450" y="272" font-size="11" fill="#FFFFFF" text-anchor="middle">1 MB/s ingest / shard</text>
+  </g>
+
+  <!-- Shard detail -->
+  <g>
+    <rect x="560" y="170" width="200" height="110" rx="4" fill="#FFF3E0" stroke="#FF9900" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <text x="660" y="196" font-size="12" font-weight="bold" fill="#232F3E" text-anchor="middle">Shard layout</text>
+    <text x="660" y="216" font-size="11" fill="#232F3E" text-anchor="middle">Shard 1 — partition key A–M</text>
+    <text x="660" y="234" font-size="11" fill="#232F3E" text-anchor="middle">Shard 2 — partition key N–Z</text>
+    <text x="660" y="252" font-size="11" fill="#232F3E" text-anchor="middle">Shard 3 — hot-key split</text>
+    <text x="660" y="270" font-size="11" fill="#666666" text-anchor="middle">Same key → same shard → ordered</text>
+  </g>
+
+  <!-- VPC -->
+  <rect x="360" y="310" width="700" height="460" fill="none" stroke="#3D9C35" stroke-width="2"/>
+  <text x="380" y="336" font-size="14" font-weight="bold" fill="#3D9C35">VPC — consumer &amp; serving tier</text>
+
+  <!-- AZ 1 -->
+  <rect x="375" y="350" width="330" height="400" fill="#F2F8FD" stroke="#1A6FB5" stroke-width="1.5" stroke-dasharray="7,4"/>
+  <text x="540" y="374" font-size="13" font-weight="bold" fill="#1A6FB5" text-anchor="middle">Availability Zone 1</text>
+  <!-- Public subnet AZ1 -->
+  <rect x="390" y="386" width="300" height="72" rx="4" fill="#E8F5E9" stroke="#3D9C35" stroke-width="1.2"/>
+  <text x="405" y="410" font-size="12" font-weight="bold" fill="#3D9C35">Public subnet</text>
+  <rect x="400" y="420" width="120" height="28" rx="4" fill="#8C4FFF"/>
+  <text x="460" y="438" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">NAT Gateway</text>
+  <text x="640" y="438" font-size="11" fill="#232F3E" text-anchor="middle">egress only</text>
+  <!-- App subnet AZ1 -->
+  <rect x="390" y="470" width="300" height="110" rx="4" fill="#E3F2FD" stroke="#1A6FB5" stroke-width="1.2"/>
+  <text x="405" y="494" font-size="12" font-weight="bold" fill="#1A6FB5">App subnet</text>
+  <rect x="400" y="504" width="130" height="64" rx="4" fill="#FF9900" stroke="#CC7A00" stroke-width="1.5"/>
+  <text x="465" y="530" font-size="12" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Lambda</text>
+  <text x="465" y="547" font-size="10" fill="#FFFFFF" text-anchor="middle">Event source mapping</text>
+  <text x="465" y="560" font-size="10" fill="#FFFFFF" text-anchor="middle">1 concurrent / shard</text>
+  <rect x="545" y="504" width="130" height="64" rx="4" fill="#FF9900" stroke="#CC7A00" stroke-width="1.5"/>
+  <text x="610" y="530" font-size="12" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Kinesis Data</text>
+  <text x="610" y="547" font-size="10" fill="#FFFFFF" text-anchor="middle">Analytics (Flink SQL)</text>
+  <text x="610" y="560" font-size="10" fill="#FFFFFF" text-anchor="middle">real-time aggregates</text>
+  <!-- DB subnet AZ1 -->
+  <rect x="390" y="592" width="300" height="146" rx="4" fill="#E8F5E9" stroke="#3D9C35" stroke-width="1.2"/>
+  <text x="405" y="616" font-size="12" font-weight="bold" fill="#3D9C35">DB subnet</text>
+  <rect x="400" y="626" width="130" height="64" rx="4" fill="#1A6FB5" stroke="#0F4C81" stroke-width="1.5"/>
+  <text x="465" y="652" font-size="12" font-weight="bold" fill="#FFFFFF" text-anchor="middle">DynamoDB</text>
+  <text x="465" y="669" font-size="10" fill="#FFFFFF" text-anchor="middle">Live serving table</text>
+  <text x="465" y="682" font-size="10" fill="#FFFFFF" text-anchor="middle">idempotent writes</text>
+  <rect x="545" y="626" width="130" height="64" rx="4" fill="#1A6FB5" stroke="#0F4C81" stroke-width="1.5"/>
+  <text x="610" y="652" font-size="12" font-weight="bold" fill="#FFFFFF" text-anchor="middle">OpenSearch</text>
+  <text x="610" y="669" font-size="10" fill="#FFFFFF" text-anchor="middle">Search &amp; dashboards</text>
+  <text x="610" y="682" font-size="10" fill="#FFFFFF" text-anchor="middle">Kibana / Grafana</text>
+  <text x="540" y="720" font-size="11" fill="#666666" text-anchor="middle">DB subnet group — private, no internet route</text>
+
+  <!-- AZ 2 -->
+  <rect x="720" y="350" width="325" height="400" fill="#F2F8FD" stroke="#1A6FB5" stroke-width="1.5" stroke-dasharray="7,4"/>
+  <text x="882" y="374" font-size="13" font-weight="bold" fill="#1A6FB5" text-anchor="middle">Availability Zone 2</text>
+  <!-- Public subnet AZ2 -->
+  <rect x="735" y="386" width="295" height="72" rx="4" fill="#E8F5E9" stroke="#3D9C35" stroke-width="1.2"/>
+  <text x="750" y="410" font-size="12" font-weight="bold" fill="#3D9C35">Public subnet</text>
+  <rect x="745" y="420" width="120" height="28" rx="4" fill="#8C4FFF"/>
+  <text x="805" y="438" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">NAT Gateway</text>
+  <!-- App subnet AZ2 -->
+  <rect x="735" y="470" width="295" height="110" rx="4" fill="#E3F2FD" stroke="#1A6FB5" stroke-width="1.2"/>
+  <text x="750" y="494" font-size="12" font-weight="bold" fill="#1A6FB5">App subnet</text>
+  <rect x="745" y="504" width="130" height="64" rx="4" fill="#FF9900" stroke="#CC7A00" stroke-width="1.5"/>
+  <text x="810" y="530" font-size="12" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Lambda</text>
+  <text x="810" y="547" font-size="10" fill="#FFFFFF" text-anchor="middle">standby concurrency</text>
+  <text x="810" y="560" font-size="10" fill="#FFFFFF" text-anchor="middle">per-shard failover</text>
+  <rect x="890" y="504" width="130" height="64" rx="4" fill="#FF9900" stroke="#CC7A00" stroke-width="1.5"/>
+  <text x="955" y="530" font-size="12" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Firehose</text>
+  <text x="955" y="547" font-size="10" fill="#FFFFFF" text-anchor="middle">Delivery stream</text>
+  <text x="955" y="560" font-size="10" fill="#FFFFFF" text-anchor="middle">batch → S3 (60s/5MB)</text>
+  <!-- DB subnet AZ2 -->
+  <rect x="735" y="592" width="295" height="146" rx="4" fill="#E8F5E9" stroke="#3D9C35" stroke-width="1.2"/>
+  <text x="750" y="616" font-size="12" font-weight="bold" fill="#3D9C35">DB subnet</text>
+  <rect x="745" y="626" width="130" height="64" rx="4" fill="#1A6FB5" stroke="#0F4C81" stroke-width="1.5"/>
+  <text x="810" y="652" font-size="12" font-weight="bold" fill="#FFFFFF" text-anchor="middle">DynamoDB</text>
+  <text x="810" y="669" font-size="10" fill="#FFFFFF" text-anchor="middle">Global table replica</text>
+  <text x="810" y="682" font-size="10" fill="#FFFFFF" text-anchor="middle">multi-AZ writes</text>
+  <rect x="890" y="626" width="130" height="64" rx="4" fill="#3D9C35" stroke="#2E7D32" stroke-width="1.5"/>
+  <text x="955" y="652" font-size="12" font-weight="bold" fill="#FFFFFF" text-anchor="middle">S3 Data Lake</text>
+  <text x="955" y="669" font-size="10" fill="#FFFFFF" text-anchor="middle">Parquet • Athena</text>
+  <text x="955" y="682" font-size="10" fill="#FFFFFF" text-anchor="middle">Glue catalog</text>
+
+  <!-- Arrows: stream -> consumers -->
+  <line x1="450" y1="280" x2="450" y2="470" stroke="#232F3E" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="462" y="330" font-size="11" fill="#232F3E">Lambda ESM polls</text>
+  <text x="462" y="345" font-size="11" fill="#666666">per shard, in order</text>
+  <line x1="540" y1="225" x2="660" y2="225" stroke="#232F3E" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <line x1="660" y1="280" x2="660" y2="470" stroke="#232F3E" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="672" y="330" font-size="11" fill="#232F3E">Flink SQL aggregates</text>
+  <text x="672" y="345" font-size="11" fill="#666666">tumbling windows</text>
+  <line x1="465" y1="568" x2="465" y2="626" stroke="#1A6FB5" stroke-width="1.8" marker-end="url(#arrowBlue)"/>
+  <text x="477" y="600" font-size="11" fill="#1A6FB5">writes</text>
+  <line x1="955" y1="568" x2="955" y2="626" stroke="#3D9C35" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="967" y="600" font-size="11" fill="#3D9C35">delivers</text>
+  <line x1="610" y1="568" x2="610" y2="626" stroke="#1A6FB5" stroke-width="1.8" marker-end="url(#arrowBlue)"/>
+  <text x="622" y="600" font-size="11" fill="#1A6FB5">indexes</text>
+
+  <!-- CloudWatch + KMS (outside VPC, bottom) -->
+  <g>
+    <rect x="790" y="170" width="270" height="110" rx="4" fill="#FFF3E0" stroke="#FF9900" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <text x="925" y="196" font-size="12" font-weight="bold" fill="#232F3E" text-anchor="middle">Observability &amp; security</text>
+    <rect x="805" y="206" width="115" height="60" rx="4" fill="#FF9900"/>
+    <text x="862" y="232" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">CloudWatch</text>
+    <text x="862" y="248" font-size="10" fill="#FFFFFF" text-anchor="middle">IteratorAge alarm</text>
+    <text x="862" y="260" font-size="10" fill="#FFFFFF" text-anchor="middle">&gt; 60s = behind</text>
+    <rect x="930" y="206" width="115" height="60" rx="4" fill="#D32F2F"/>
+    <text x="987" y="232" font-size="11" font-weight="bold" fill="#FFFFFF" text-anchor="middle">KMS</text>
+    <text x="987" y="248" font-size="10" fill="#FFFFFF" text-anchor="middle">Server-side</text>
+    <text x="987" y="260" font-size="10" fill="#FFFFFF" text-anchor="middle">encryption (CMK)</text>
+  </g>
+  <line x1="760" y1="200" x2="790" y2="200" stroke="#232F3E" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Replay note -->
+  <g>
+    <rect x="30" y="400" width="280" height="120" rx="4" fill="#F5F5F5" stroke="#999999" stroke-width="1"/>
+    <text x="45" y="426" font-size="12" font-weight="bold" fill="#232F3E">Replay &amp; recovery</text>
+    <text x="45" y="446" font-size="11" fill="#232F3E">• TRIM_HORIZON replays the</text>
+    <text x="45" y="462" font-size="11" fill="#232F3E">  full retention window</text>
+    <text x="45" y="482" font-size="11" fill="#232F3E">• Consumers checkpoint per</text>
+    <text x="45" y="498" font-size="11" fill="#232F3E">  shard — resume, don't restart</text>
+  </g>
+  <line x1="310" y1="460" x2="360" y2="250" stroke="#999999" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+
+  <!-- Legend -->
+  <g>
+    <rect x="30" y="560" width="280" height="180" rx="4" fill="#FFFFFF" stroke="#CCCCCC" stroke-width="1"/>
+    <text x="45" y="586" font-size="12" font-weight="bold" fill="#232F3E">Legend</text>
+    <rect x="45" y="598" width="22" height="16" fill="#FF9900"/><text x="75" y="611" font-size="11" fill="#232F3E">Compute / streaming (orange)</text>
+    <rect x="45" y="622" width="22" height="16" fill="#1A6FB5"/><text x="75" y="635" font-size="11" fill="#232F3E">Database / search (blue)</text>
+    <rect x="45" y="646" width="22" height="16" fill="#3D9C35"/><text x="75" y="659" font-size="11" fill="#232F3E">Storage / VPC (green)</text>
+    <rect x="45" y="670" width="22" height="16" fill="#8C4FFF"/><text x="75" y="683" font-size="11" fill="#232F3E">Networking / edge (purple)</text>
+    <rect x="45" y="694" width="22" height="16" fill="#D32F2F"/><text x="75" y="707" font-size="11" fill="#232F3E">Security (red)</text>
+    <text x="45" y="730" font-size="11" fill="#666666">Dashed box = Availability Zone</text>
+  </g>
+
+  <!-- Footer -->
+  <text x="560" y="830" font-size="12" fill="#666666" text-anchor="middle">Traffic flow: Producers → Kinesis Data Streams → Lambda / Kinesis Data Analytics → DynamoDB / OpenSearch • Firehose → S3 data lake (Athena)</text>
+  <text x="560" y="852" font-size="11" fill="#999999" text-anchor="middle">Style: classic AWS reference architecture — white background, official service colours, dashed AZ boxes, labelled tiered subnets, labelled traffic arrows</text>
+</svg>
